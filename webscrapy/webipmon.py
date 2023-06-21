@@ -2,6 +2,7 @@ import requests
 import socket
 from bs4 import BeautifulSoup
 import logging as logger
+import sqlite3
 
 # Configure logging
 logger.basicConfig(level=logger.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -34,9 +35,9 @@ def get_my_ext_ip(website_url):
     url = website_url
     response = requests.get(url)
     soup = BeautifulSoup(response.content, 'html.parser')
-    my_ext_ip = soup.get_text().strip()
-    logger_ipinfoio.info(f'IP from ipinfo.io: {my_ext_ip}')
-    return my_ext_ip
+    my_ip = soup.get_text().strip()
+    logger_ipinfoio.info(f'IP from ipinfo.io: {my_ip}')
+    return my_ip
 
 def get_ext_ip_iproyalcom(website_url):
     """
@@ -50,9 +51,9 @@ def get_ext_ip_iproyalcom(website_url):
     response = requests.get(url)
     soup = BeautifulSoup(response.content, 'html.parser')
     ip_element = soup.find('div', string='IP:').find_next_sibling('div')
-    my_ext_ip = ip_element.get_text().strip()
-    logger_iproyalcom.info(f'IP from iproyal.com/ip-lookup: {my_ext_ip}')
-    return my_ext_ip
+    my_ip = ip_element.get_text().strip()
+    logger_iproyalcom.info(f'IP from iproyal.com/ip-lookup: {my_ip}')
+    return my_ip
 
 def compare_ip(local_ip, website_url, website_ip):
     """
@@ -64,8 +65,25 @@ def compare_ip(local_ip, website_url, website_ip):
     """
     if local_ip == website_ip:
         logger.info(f"Local IP ({local_ip}) matches the IP: {website_ip} from: {website_url}")
+        insert_ip_match(website_url, website_ip, True)
     else:
         logger.info(f"Local IP ({local_ip}) does not match the IP: {website_ip} from: {website_url}")
+        insert_ip_match(website_url, website_ip, False)
+
+def insert_ip_match(website_url, website_ip, match):
+    """
+    Inserts IP match information into the SQLite database.
+    Args:
+        website_url (str): The URL of the website.
+        website_ip (str): The IP address obtained from the website.
+        match (bool): Indicates whether the IP matches the local IP or not.
+    """
+    conn = sqlite3.connect('ip_matches.db')
+    cursor = conn.cursor()
+    cursor.execute("CREATE TABLE IF NOT EXISTS ip_matches (website_url TEXT, website_ip TEXT, match BOOL)")
+    cursor.execute("INSERT INTO ip_matches VALUES (?, ?, ?)", (website_url, website_ip, match))
+    conn.commit()
+    conn.close()
 
 def main():
     """
