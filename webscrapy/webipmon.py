@@ -2,7 +2,7 @@ import requests
 import socket
 from bs4 import BeautifulSoup
 import logging as logger
-import sqlite3
+import mysql.connector
 
 # Configure logging
 logger.basicConfig(level=logger.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -72,16 +72,21 @@ def compare_ip(local_ip, website_url, website_ip):
 
 def insert_ip_match(website_url, website_ip, match):
     """
-    Inserts IP match information into the SQLite database.
+    Inserts IP match information into the MySQL database.
     Args:
         website_url (str): The URL of the website.
         website_ip (str): The IP address obtained from the website.
         match (bool): Indicates whether the IP matches the local IP or not.
     """
-    conn = sqlite3.connect('ip_matches.db')
+    conn = mysql.connector.connect(
+        host='your_host',
+        user='your_username',
+        password='your_password',
+        database='your_database'
+    )
     cursor = conn.cursor()
-    cursor.execute("CREATE TABLE IF NOT EXISTS ip_matches (website_url TEXT, website_ip TEXT, match BOOL)")
-    cursor.execute("INSERT INTO ip_matches VALUES (?, ?, ?)", (website_url, website_ip, match))
+    cursor.execute("CREATE TABLE IF NOT EXISTS ip_matches (website_url VARCHAR(255), website_ip VARCHAR(255), match BOOL)")
+    cursor.execute("INSERT INTO ip_matches (website_url, website_ip, match) VALUES (%s, %s, %s)", (website_url, website_ip, match))
     conn.commit()
     conn.close()
 
