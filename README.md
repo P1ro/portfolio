@@ -1,6 +1,6 @@
-Personal repo , to keep me active with python, DevOps, etc.
-Will add jdesc.png for job description and the code That will match the asked job
+Personal repo, to keep me active with Python, DevOps, etc.
+I will add jdesc.png for the job description and the code That will match the asked job
 
-Feel free to comment, create pull request, etc, so i can practices github as well!
+Feel free to comment, create pull requests, etc, so I can practice GitHub as well!
 
 Have a nice day.
