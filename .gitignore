@@ -1,3 +1,5 @@
+.gitignore
 st-mis-master
-st-mis*
+st-mis-master.zip
+st-mis.zip
 webscrapy/.venv
