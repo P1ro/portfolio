@@ -1,0 +1,7 @@
+antiorm==1.2.1
+beautifulsoup4==4.12.2
+bs4==0.0.1
+db==0.1.1
+db-sqlite3==0.0.1
+soupsieve==2.4.1
+sql==2022.4.0
